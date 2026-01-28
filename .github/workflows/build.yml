@@ -1,11 +1,11 @@
-name: Build /docs on main branch
+name: Build and deploy to gh-pages
 
 on:
   push:
     branches: [ main ]
 
 permissions:
-  contents: write   # allows the Action to push to the repo
+  contents: write  # needed to push to gh-pages
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false  # use token for pushing
+          fetch-depth: 0  # needed to push to another branch
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -28,17 +29,31 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Commit and push docs
+      - name: Deploy build to gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Configure Git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add docs -f
-          if git diff --cached --quiet; then
-            echo "No changes in docs to commit."
+          # Prepare a temporary worktree for gh-pages
+          git fetch origin gh-pages || echo "No gh-pages branch yet"
+          git worktree add gh-pages gh-pages || git worktree add gh-pages origin/gh-pages
+
+          # Clear existing contents
+          rm -rf gh-pages/*
+          
+          # Copy built docs
+          cp -r docs/* gh-pages/
+
+          cd gh-pages
+
+          # Commit and push changes
+          if git diff --quiet; then
+            echo "No changes to deploy."
           else
-            git commit -m "chore: update built docs [skip ci]"
-            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
+            git add --all
+            git commit -m "chore: update docs [skip ci]"
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:gh-pages
           fi
