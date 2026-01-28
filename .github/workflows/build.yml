@@ -1,4 +1,4 @@
-name: Build and deploy to gh-pages
+name: Build and Deploy /dist to gh-pages
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy build to gh-pages
+      - name: Deploy /dist to gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -43,9 +43,9 @@ jobs:
 
           # Clear existing contents
           rm -rf gh-pages/*
-          
-          # Copy built docs
-          cp -r docs/* gh-pages/
+
+          # Copy built dist files
+          cp -r dist/* gh-pages/
 
           cd gh-pages
 
@@ -54,6 +54,6 @@ jobs:
             echo "No changes to deploy."
           else
             git add --all
-            git commit -m "chore: update docs [skip ci]"
+            git commit -m "chore: update /dist [skip ci]"
             git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:gh-pages
           fi

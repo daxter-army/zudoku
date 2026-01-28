@@ -5,9 +5,6 @@ import path from 'path'
 
 export default defineConfig({
   base: '/zudoku/',
-  build: {
-    outDir: 'docs',
-  },
   plugins: [
     react({
       babel: {
