@@ -1,5 +1,6 @@
+import clsx from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Keyboard, Pause, Pencil, Play, RotateCcw, X } from 'lucide-react'
+import { Info, Keyboard, Pause, Pencil, Play, RotateCcw, X } from 'lucide-react'
 
 import { getSudoku } from 'sudoku-gen'
 import type { Sudoku } from 'sudoku-gen/dist/types/sudoku.type'
@@ -40,10 +41,14 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
         setIsPlay(false)
     }
 
+    const onInfoClickHandler = () => {
+
+    }
+
     const onGameResetHandler = () => {
         setUserSudokuPuzzle(sudokuConfigRef.current.puzzle)
         setTimer(0)
-        setIsPlay(true)
+        onPlayPauseClickHandler()
     }
 
     const onPlayPauseClickHandler = () => {
@@ -89,6 +94,10 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
         }
     }, [])
 
+    useEffect(() => {
+        console.log(isPlay)
+    }, [isPlay])
+
     return (
         <>
             <div className='flex flex-1 justify-between'>
@@ -113,6 +122,9 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                     <p className='text-sm ibm-plex-mono-regular'>{getDisplayTime(timer)} • {gameMode}</p>
                 </div>
                 <div className='flex'>
+                    <TerminalButton customContainerClassNames='mb-1' onClickHandler={onInfoClickHandler} customButtonClassNames='!pt-2 !py-2 !px-2'>
+                        <Info size={16} color='white' />
+                    </TerminalButton>
                     <TerminalButton
                         title='pencil/stylus mode'
                         customContainerClassNames='mb-1'
@@ -129,7 +141,7 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                     </TerminalButton>
                 </div>
             </div>
-            <div className='grid grid-cols-9 relative'>
+            <div className={clsx('grid grid-cols-9 relative', { 'cursor-not-allowed': !isPlay })}>
                 {
                     sudokuGrid.map((row, rowIndex) => {
                         return row.map((col, colIndex) => <SudokuCell

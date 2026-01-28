@@ -28,10 +28,9 @@ export const getFormattedCellInput = (str: string): string => {
 }
 
 export const getFormattedHintInput = (str: string) => {
-    // const digits = str.replace(DIGITS_FROM_1_TO_9_ONLY_REGEX, '');
+    const digits = str.replace(DIGITS_FROM_1_TO_9_ONLY_REGEX, '');
 
-    // return digits.replace(NO_DUPLICATED_DIGITS_ONLY_REGEX, '');
-    return str
+    return digits.replace(NO_DUPLICATED_DIGITS_ONLY_REGEX, '');
 }
 
 export const noop = () => { }

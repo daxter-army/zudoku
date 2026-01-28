@@ -1,30 +1,38 @@
 import clsx from "clsx"
+import { useState } from "react"
 import { Minus, Plus } from "lucide-react"
-import { useState, type ChangeEvent } from "react"
 
 import { get1DIndexFrom2DIndex, getFormattedHintInput } from "@/utils/utils"
 
-import { HINT_QUEUE_SIZE, SUDOKU_DELIMITER, SUDOKU_GRID } from "@/constants/common"
+import { HINT_QUEUE_SIZE, KEY_NAMES, SUDOKU_DELIMITER, SUDOKU_GRID } from "@/constants/common"
 
 import type { SudokuCellProps } from "./SudokuCell.prop"
 
 const SudokuCell = ({ rowIndex, colIndex, data, onSudokuCellInputHandler, sudokuConfigRef, isPlay }: SudokuCellProps) => {
+    // const cellInputRef = useRef<HTMLInputElement>(null)
+
     const [userHintInput, setUserHintInput] = useState("")
 
     const [isDoubleClickStateActive, setIsDoubleClickStateActive] = useState(false)
 
-    const onBlurHandler = () => {
+    const onHintInputBlurHandler = () => {
         setIsDoubleClickStateActive(false)
     }
 
-    const onHintInputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        let formattedInputValue = getFormattedHintInput(e.target.value)
-
-        if (formattedInputValue.length > HINT_QUEUE_SIZE) {
-            formattedInputValue = formattedInputValue.slice(1)
+    const onHintInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawNewHintInput = userHintInput + e.target.value
+        if (rawNewHintInput.length > HINT_QUEUE_SIZE) {
+            return
         }
 
-        setUserHintInput(formattedInputValue)
+        const sorted = getFormattedHintInput(userHintInput + e.target.value).split('').sort().join('');
+        setUserHintInput(sorted)
+    }
+
+    const onHintInputKeyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key.toLowerCase() !== KEY_NAMES.BACKSPACE) return
+
+        setUserHintInput(userHintInput.slice(0, -1))
     }
 
     return (
@@ -38,22 +46,26 @@ const SudokuCell = ({ rowIndex, colIndex, data, onSudokuCellInputHandler, sudoku
             <CellHints data={userHintInput.split('')} />
             {
                 sudokuConfigRef.current.puzzle[get1DIndexFrom2DIndex(rowIndex, colIndex)] === SUDOKU_DELIMITER
-                    ? isDoubleClickStateActive
-                        ? <input
-                            inputMode='numeric'
-                            value={userHintInput}
-                            onBlur={onBlurHandler}
-                            onChange={onHintInputChangeHandler}
-                            style={{ paddingLeft: 'calc(50%)', paddingRight: 'calc(50%)' }}
-                            className='w-full h-full ibm-plex-mono-regular'
-                        />
-                        : <input
-                            inputMode='numeric'
-                            style={{ paddingLeft: 'calc(50% - 0.5ch)' }}
-                            value={data === SUDOKU_DELIMITER ? '' : data}
-                            className='w-full h-full ibm-plex-mono-regular outline-none'
-                            onChange={(e) => onSudokuCellInputHandler(e.target.value, rowIndex, colIndex)}
-                        />
+                    ? isPlay
+                        ? false
+                            ? <input
+                                value={''}
+                                // ref={cellInputRef}
+                                inputMode='numeric'
+                                onBlur={onHintInputBlurHandler}
+                                onKeyDown={onHintInputKeyDownHandler}
+                                onChange={onHintInputChangeHandler}
+                                style={{ paddingLeft: 'calc(50%)', paddingRight: 'calc(50%)' }}
+                                className='w-full h-full ibm-plex-mono-regular'
+                            />
+                            : <input
+                                inputMode='numeric'
+                                style={{ paddingLeft: 'calc(50% - 0.5ch)' }}
+                                value={data === SUDOKU_DELIMITER ? '' : data}
+                                className='w-full h-full ibm-plex-mono-regular outline-none'
+                                onChange={(e) => onSudokuCellInputHandler(e.target.value, rowIndex, colIndex)}
+                            />
+                        : <div className='ibm-plex-mono-regular'>{data === SUDOKU_DELIMITER ? '' : data}</div>
                     : <div className='ibm-plex-mono-regular'>{data}</div>
             }
         </div>
@@ -78,7 +90,7 @@ const CellHints = ({ data }: { data: string[] }) => {
     return <>
         {
             data.map((hint, i) => {
-                return <span key={i} className={getClassName(i + 1)}>
+                return <span key={i} className={clsx('text-xs', getClassName(i + 1))}>
                     {hint}
                 </span>
             })

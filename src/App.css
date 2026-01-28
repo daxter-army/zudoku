@@ -5,6 +5,7 @@
 
 .arenaContainer {
     width: 26.5rem;
+    transition: 0.2s;
 }
 
 @media (max-width: 26.5rem) {

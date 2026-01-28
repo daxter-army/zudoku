@@ -63,3 +63,6 @@ export const DIGITS_FROM_1_TO_9_ONLY_REGEX = /[^1-9]/g
 export const NO_DUPLICATED_DIGITS_ONLY_REGEX = /(.)(?=.*\1)/g
 
 export const HINT_QUEUE_SIZE = 8
+export const KEY_NAMES = {
+    BACKSPACE: 'backspace'
+}
