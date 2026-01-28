@@ -17,6 +17,9 @@ export type ledMatixItemConfig = {
 }
 
 const LED_COLOR = 'white'
+// NOTE: For now LEDs maintain aspect-ratio
+// and take their size as per the parent container
+// by default the size of the inner container is equivalent to ARENA_WIDTH
 const LED_SIZE_WIDTH = 0.9 // this is in rem
 const LED_SIZE_HEIGHT = 0.9 // this is in rem
 export const LED_SHADOW_LENGTH = 0.4 // this is in rem

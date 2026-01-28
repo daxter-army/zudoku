@@ -1,3 +1,27 @@
+export const INPUT_MODE = {
+    PENCIL: 'PENCIL',
+    NUMPAD: 'NUMPAD',
+} as const
+export type INPUT_MODE = (typeof INPUT_MODE)[keyof typeof INPUT_MODE];
+
+export const GAME_MODE = {
+    EASY: 'easy',
+    MEDIUM: 'medium',
+    HARD: 'hard',
+} as const
+export type GAME_MODE = (typeof GAME_MODE)[keyof typeof GAME_MODE];
+
+export const ID_TYPE = {
+    INTERVAL: 'INTERVAL',
+    TIMEOUT: 'TIMEOUT',
+} as const
+export type ID_TYPE = (typeof ID_TYPE)[keyof typeof ID_TYPE];
+
+export const AVAILABLE_INPUT_MODES = [
+    INPUT_MODE.PENCIL, // apple pencil input
+    INPUT_MODE.NUMPAD, // on screen numpad (e.g mobile)
+]
+
 export const LED_SHADOW_LENGTH_TO_TAILWIND_ACTIVE_TRANSLATE_CLASS_MAP = {
     0.1: ['active:translate-x-[0.1rem]', 'active:translate-y-[0.1rem]'],
     0.2: ['active:translate-x-[0.2rem]', 'active:translate-y-[0.2rem]'],
@@ -24,6 +48,8 @@ export const LED_SHADOW_LENGTH_TO_TAILWIND_TRANSLATE_CLASS_MAP = {
     1: ['translate-x-[1rem]', 'translate-y-[1rem]']
 }
 
+export const SUDOKU_DELIMITER = "-"
+
 export const SUDOKU_GRID = Object.freeze({
     BORDER_COLOR: '#777',
     PLUS_ICON_BORDER_SIZE: 16,
@@ -32,19 +58,8 @@ export const SUDOKU_GRID = Object.freeze({
     MINUS_ICON_STROKE_WIDTH: 1.5,
 })
 
-export const INPUT_MODE = {
-    PENCIL: 'PENCIL',
-    NUMPAD: 'NUMPAD'
-} as const
+export const DIGITS_ONLY_REGEX = /\D/g
+export const DIGITS_FROM_1_TO_9_ONLY_REGEX = /[^1-9]/g
+export const NO_DUPLICATED_DIGITS_ONLY_REGEX = /(.)(?=.*\1)/g
 
-export type INPUT_MODE = (typeof INPUT_MODE)[keyof typeof INPUT_MODE];
-
-export const GAME_MODE = {
-    EASY: 'easy',
-    MEDIUM: 'medium',
-    HARD: 'hard',
-} as const
-
-export type GAME_MODE = (typeof GAME_MODE)[keyof typeof GAME_MODE];
-
-export const DIGITS_ONLY_REGEX = /^\d*$/
+export const HINT_QUEUE_SIZE = 8

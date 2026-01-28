@@ -15,6 +15,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  -webkit-user-select: none;
+  /* Safari, iOS */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE/Edge */
+  user-select: none;
+}
+
 html,
 body,
 #root {
@@ -63,48 +73,49 @@ body,
   font-style: normal;
 }
 
-.ibm-plex-mono-thin-italic {
+/* .ibm-plex-mono-thin-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 100;
   font-style: italic;
-}
+} */
 
-.ibm-plex-mono-extralight-italic {
+/* .ibm-plex-mono-extralight-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 200;
   font-style: italic;
-}
+} */
 
-.ibm-plex-mono-light-italic {
+/* .ibm-plex-mono-light-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 300;
   font-style: italic;
-}
+} */
 
-.ibm-plex-mono-regular-italic {
+/* .ibm-plex-mono-regular-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 400;
   font-style: italic;
-}
+} */
 
-.ibm-plex-mono-medium-italic {
+/* .ibm-plex-mono-medium-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 500;
   font-style: italic;
-}
+} */
 
-.ibm-plex-mono-semibold-italic {
+/* .ibm-plex-mono-semibold-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 600;
   font-style: italic;
-}
+} */
 
-.ibm-plex-mono-bold-italic {
+/* .ibm-plex-mono-bold-italic {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 700;
   font-style: italic;
-}
+} */
 
+/* cell elements position utility */
 @layer components {
   .pos-top-left {
     @apply absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2;
@@ -119,6 +130,10 @@ body,
   }
 
   .pos-right-middle {
+    @apply absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2;
+  }
+
+  .pos-right-middle-rotated {
     @apply absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 rotate-90;
   }
 
@@ -135,14 +150,13 @@ body,
   }
 
   .pos-left-middle {
+    @apply absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2;
+  }
+
+  .pos-left-middle-rotated {
     @apply absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 rotate-90;
   }
-
-  .pos-center {
-    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
-  }
 }
-
 
 @media (prefers-color-scheme: light) {
   :root {

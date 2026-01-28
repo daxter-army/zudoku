@@ -38,7 +38,6 @@ const BillBoard = ({ data }: BillBoardProps) => {
 
     return (
         <div style={{
-            width: 'max-content',
             margin: `0 ${LED_SHADOW_LENGTH}rem ${LED_SHADOW_LENGTH}rem 0`
         }}>
             {data.map((row, rowIndex) => {
@@ -46,10 +45,10 @@ const BillBoard = ({ data }: BillBoardProps) => {
                     {row.map((config, columnIndex) => {
                         return <div
                             key={`${rowIndex}${columnIndex}`}
-                            className="flex relative"
+                            className="flex relative aspect-square flex-1"
                             style={{
-                                width: `${config.width}rem`,
-                                height: `${config.height}rem`,
+                                // width: `${config.width}rem`,
+                                // height: `${config.height}rem`,
                             }}
                         >
                             {ledRenderer(config)}

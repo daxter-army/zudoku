@@ -1,0 +1,15 @@
+:root {
+    /* this is equivalent to ARENA_WIDTH */
+    --areana-width: 26.5rem;
+}
+
+.arenaContainer {
+    width: 26.5rem;
+}
+
+@media (max-width: 26.5rem) {
+    .arenaContainer {
+        padding: 0 1rem 0;
+        width: 100%;
+    }
+}

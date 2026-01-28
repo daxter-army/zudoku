@@ -4,14 +4,14 @@ import BillBoard from '@/components/BillBoard/BillBoard'
 import SudokuGrid from '@/components/SudokuGrid/SudokuGrid'
 import TerminalButton from '@/components/TerminalButton/TerminalButton'
 
-import { GAME_MODE } from '@/constants/common'
+import { GAME_MODE, ID_TYPE } from '@/constants/common'
+import { fullLed, LED_MATRIX_CONFIG, offLed } from '@/constants/led'
 import { GAME_IN_PROGRESS, SELECT_MODE, WELCOME_TEXT } from '@/constants/lang'
-import { ARENA_WIDTH, fullLed, LED_MATRIX_CONFIG, offLed } from '@/constants/led'
 
 import './App.css'
 
 function App() {
-  const allTimerRefs = useRef<Map<string, number>>(new Map())
+  const allTimerRefs = useRef<Map<ID_TYPE, number>>(new Map())
 
   const [timer, setTimer] = useState(0)
   const [isPlay, setIsPlay] = useState(false)
@@ -33,10 +33,11 @@ function App() {
     setIsPlay(true)
   }
 
+  // S <-> Z animation switching off
   useEffect(() => {
     if (gameMode) {
       for (const [timerType, timerID] of allTimerRefs.current) {
-        if (timerType === 'TIMEOUT') {
+        if (timerType === ID_TYPE.TIMEOUT) {
           clearTimeout(timerID)
           continue
         }
@@ -48,6 +49,7 @@ function App() {
     }
   }, [gameMode])
 
+  // S <-> Z animation switching on
   useEffect(() => {
     if (gameMode) return
 
@@ -86,12 +88,12 @@ function App() {
           return newLedMatrix
         })
 
-        allTimerRefs.current.set('INTERVAL', STimerID)
+        allTimerRefs.current.set(ID_TYPE.INTERVAL, STimerID)
       }, 2000)
     }, 1000)
 
-    allTimerRefs.current.set('INTERVAL', ZTimerID)
-    allTimerRefs.current.set('TIMEOUT', SDelayTimerID)
+    allTimerRefs.current.set(ID_TYPE.INTERVAL, ZTimerID)
+    allTimerRefs.current.set(ID_TYPE.TIMEOUT, SDelayTimerID)
 
     return () => {
       clearInterval(ZTimerID)
@@ -102,7 +104,7 @@ function App() {
 
   return (
     <div className='h-dvh flex items-center justify-center'>
-      <div style={{ width: `${ARENA_WIDTH}rem` }} className='flex flex-col gap-4'>
+      <div className='arenaContainer flex flex-col gap-4'>
         <div className='flex flex-col gap-3'>
           <div>
             <BillBoard data={ledMatrix} />
