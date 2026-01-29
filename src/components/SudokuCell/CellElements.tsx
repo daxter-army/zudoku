@@ -4,7 +4,7 @@ import { SUDOKU_GRID } from "@/constants/common"
 
 import type { CellElementsProps } from "./SudokuCell.prop"
 
-const CellElements = ({ cellMode, focusCellCoords, rowIndex, colIndex }: CellElementsProps) => {
+const CellElements = ({ focusCellCoords, rowIndex, colIndex }: CellElementsProps) => {
     const iconColor = SUDOKU_GRID.BORDER_COLOR
     const iconFocusColor = SUDOKU_GRID.FOCUSED_BORDER_COLOR
     const plusIconSize = SUDOKU_GRID.PLUS_ICON_BORDER_SIZE
