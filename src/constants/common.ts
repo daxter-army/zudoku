@@ -17,6 +17,12 @@ export const ID_TYPE = {
 } as const
 export type ID_TYPE = (typeof ID_TYPE)[keyof typeof ID_TYPE];
 
+export const CELL_MODE = {
+    HINT: 'HINT',
+    SOLUTION: 'SOLUTION'
+} as const
+export type CELL_MODE = (typeof CELL_MODE)[keyof typeof CELL_MODE];
+
 export const AVAILABLE_INPUT_MODES = [
     INPUT_MODE.PENCIL, // apple pencil input
     INPUT_MODE.NUMPAD, // on screen numpad (e.g mobile)
@@ -51,16 +57,20 @@ export const LED_SHADOW_LENGTH_TO_TAILWIND_TRANSLATE_CLASS_MAP = {
 export const SUDOKU_DELIMITER = "-"
 
 export const SUDOKU_GRID = Object.freeze({
-    BORDER_COLOR: '#777',
-    PLUS_ICON_BORDER_SIZE: 16,
+    BORDER_COLOR: '#444',
+    HINT_BORDER_COLOR: '#FFEA00',
+    FOCUSED_BORDER_COLOR: '#777',
+    PLUS_ICON_BORDER_SIZE: 15,
     PLUS_ICON_STROKE_WIDTH: 1.5,
-    MINUS_ICON_BORDER_SIZE: 16,
+    MINUS_ICON_BORDER_SIZE: 15,
     MINUS_ICON_STROKE_WIDTH: 1.5,
 })
 
 export const DIGITS_ONLY_REGEX = /\D/g
 export const DIGITS_FROM_1_TO_9_ONLY_REGEX = /[^1-9]/g
 export const NO_DUPLICATED_DIGITS_ONLY_REGEX = /(.)(?=.*\1)/g
+
+export const NUMPAD_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 export const HINT_QUEUE_SIZE = 8
 export const KEY_NAMES = {

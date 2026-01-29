@@ -31,6 +31,11 @@ body,
   height: 100%;
 }
 
+input {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 .ibm-plex-mono-thin {
   font-family: "IBM Plex Mono", monospace;
   font-weight: 100;

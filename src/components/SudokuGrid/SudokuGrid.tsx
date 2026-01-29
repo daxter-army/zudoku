@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Info, Keyboard, Pause, Pencil, Play, RotateCcw, X } from 'lucide-react'
+import { Keyboard, Pause, Pencil, Play, RotateCcw, X } from 'lucide-react'
 
 import { getSudoku } from 'sudoku-gen'
 import type { Sudoku } from 'sudoku-gen/dist/types/sudoku.type'
@@ -10,7 +10,7 @@ import TerminalButton from '@/components/TerminalButton/TerminalButton'
 
 import { get1DIndexFrom2DIndex, getDisplayTime, getFormattedCellInput } from '@/utils/utils'
 
-import { AVAILABLE_INPUT_MODES, INPUT_MODE } from '@/constants/common'
+import { AVAILABLE_INPUT_MODES, INPUT_MODE, NUMPAD_KEYS } from '@/constants/common'
 
 import type { SudokuGridProps } from "./SudokuGrid.props"
 
@@ -19,6 +19,7 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
     const sudokuConfigRef = useRef<Sudoku>(getSudoku(gameMode))
 
     const [activeInputMode, setActiveInputMode] = useState(0)
+    const [focusCellCoords, setFocusCellCoords] = useState<number[]>([-1, -1])
     const [userSudokuPuzzle, setUserSudokuPuzzle] = useState(sudokuConfigRef.current.puzzle)
 
     const sudokuGrid = useMemo(() => {
@@ -38,38 +39,41 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
 
     const onGameStopHandler = () => {
         setGameMode(null)
-        setIsPlay(false)
+
+        onPauseClickHandler()
     }
 
-    const onInfoClickHandler = () => {
-
-    }
+    // const onInfoClickHandler = () => { }
 
     const onGameResetHandler = () => {
         setUserSudokuPuzzle(sudokuConfigRef.current.puzzle)
         setTimer(0)
-        onPlayPauseClickHandler()
+
+        onPauseClickHandler()
     }
 
-    const onPlayPauseClickHandler = () => {
-        if (isPlay && timerRef.current) {
-            clearInterval(timerRef.current)
-            setIsPlay(false)
-
-            return
-        }
+    const onPlayClickHandler = () => {
+        if (isPlay) return
 
         timerRef.current = setInterval(() => {
             setTimer(prev => prev + 1)
         }, 1000)
+
         setIsPlay(true)
     }
 
-    function onSudokuCellInputHandler(value: string, i: number, j: number) {
+    const onPauseClickHandler = () => {
+        if (!isPlay || !timerRef.current) return
+
+        console.log("here", timerRef.current)
+        clearInterval(timerRef.current)
+        setIsPlay(false)
+    }
+
+    const onSudokuCellInputHandler = (value: string, i: number, j: number) => {
         if (!isPlay) return
 
         const normalizedIndex = get1DIndexFrom2DIndex(i, j)
-
         const newUserSudokuPuzzle =
             // old sudoku puzzle string
             userSudokuPuzzle.substring(0, normalizedIndex) +
@@ -79,6 +83,13 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
             userSudokuPuzzle.substring(normalizedIndex + 1)
 
         setUserSudokuPuzzle(newUserSudokuPuzzle)
+    }
+
+    const onNumpadKeyClickHandler = (num: string) => {
+        const [focusRowIndex, focusColIndex] = focusCellCoords
+        if (focusRowIndex == -1 && focusColIndex == -1) return
+
+        onSudokuCellInputHandler(num, focusRowIndex, focusColIndex)
     }
 
     // for handling timer
@@ -94,10 +105,6 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
         }
     }, [])
 
-    useEffect(() => {
-        console.log(isPlay)
-    }, [isPlay])
-
     return (
         <>
             <div className='flex flex-1 justify-between'>
@@ -107,14 +114,14 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                             ? <TerminalButton
                                 title='pause game'
                                 customContainerClassNames='mr-1 mb-1'
-                                onClickHandler={onPlayPauseClickHandler}
+                                onClickHandler={onPauseClickHandler}
                                 customButtonClassNames='!pt-2 !py-2 !px-2'>
                                 <Pause size={16} color='white' />
                             </TerminalButton>
                             : <TerminalButton
                                 title='resume game'
                                 customContainerClassNames='mr-1 mb-1'
-                                onClickHandler={onPlayPauseClickHandler}
+                                onClickHandler={onPlayClickHandler}
                                 customButtonClassNames='!pt-2 !py-2 !px-2'>
                                 <Play size={16} color='white' />
                             </TerminalButton>
@@ -122,9 +129,9 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                     <p className='text-sm ibm-plex-mono-regular'>{getDisplayTime(timer)} • {gameMode}</p>
                 </div>
                 <div className='flex'>
-                    <TerminalButton customContainerClassNames='mb-1' onClickHandler={onInfoClickHandler} customButtonClassNames='!pt-2 !py-2 !px-2'>
+                    {/* <TerminalButton customContainerClassNames='mb-1' onClickHandler={onInfoClickHandler} customButtonClassNames='!pt-2 !py-2 !px-2'>
                         <Info size={16} color='white' />
-                    </TerminalButton>
+                    </TerminalButton> */}
                     <TerminalButton
                         title='pencil/stylus mode'
                         customContainerClassNames='mb-1'
@@ -141,6 +148,16 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                     </TerminalButton>
                 </div>
             </div>
+            {AVAILABLE_INPUT_MODES[activeInputMode] === INPUT_MODE.NUMPAD && <div className='flex'>
+                {NUMPAD_KEYS.map((num, i) => <TerminalButton
+                    key={i}
+                    onClickHandler={() => onNumpadKeyClickHandler(num)}
+                    customButtonClassNames='flex-1 !pt-2 !py-2 !px-2 text-[1.1rem]'
+                    customContainerClassNames={clsx('mb-1 flex-1 aspect-square', { 'mr-1': num === '9' })}
+                >
+                    {num}
+                </TerminalButton>)}
+            </div>}
             <div className={clsx('grid grid-cols-9 relative', { 'cursor-not-allowed': !isPlay })}>
                 {
                     sudokuGrid.map((row, rowIndex) => {
@@ -150,7 +167,10 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                             isPlay={isPlay}
                             rowIndex={rowIndex}
                             colIndex={colIndex}
+                            activeInputMode={activeInputMode}
                             sudokuConfigRef={sudokuConfigRef}
+                            focusCellCoords={focusCellCoords}
+                            setFocusCellCoords={setFocusCellCoords}
                             onSudokuCellInputHandler={onSudokuCellInputHandler}
                         />)
                     })

@@ -1,8 +1,9 @@
 export type TerminalButtonProps = {
     title?: string,
+    isDisabled?: boolean
     children: React.ReactNode
     onClickHandler?: () => void
-    customContainerClassNames?: string
     customButtonClassNames?: string
     customShadowClassNames?: string
+    customContainerClassNames?: string
 }

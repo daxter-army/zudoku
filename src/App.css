@@ -3,14 +3,24 @@
     --areana-width: 26.5rem;
 }
 
+.appContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .arenaContainer {
     width: 26.5rem;
     transition: 0.2s;
 }
 
 @media (max-width: 26.5rem) {
+    .appContainer {
+        display: block;
+    }
+
     .arenaContainer {
-        padding: 0 1rem 0;
+        padding: 1rem 1rem 0;
         width: 100%;
     }
 }

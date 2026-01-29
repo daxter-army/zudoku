@@ -1,22 +1,60 @@
 import clsx from "clsx"
 import { useState } from "react"
-import { Minus, Plus } from "lucide-react"
+import { Lightbulb } from "lucide-react"
+
+import CellHints from "./CellHints"
+import CellElements from "./CellElements"
 
 import { get1DIndexFrom2DIndex, getFormattedHintInput } from "@/utils/utils"
 
-import { HINT_QUEUE_SIZE, KEY_NAMES, SUDOKU_DELIMITER, SUDOKU_GRID } from "@/constants/common"
+import {
+    CELL_MODE,
+    KEY_NAMES,
+    INPUT_MODE,
+    HINT_QUEUE_SIZE,
+    SUDOKU_DELIMITER,
+    AVAILABLE_INPUT_MODES,
+} from "@/constants/common"
 
 import type { SudokuCellProps } from "./SudokuCell.prop"
 
-const SudokuCell = ({ rowIndex, colIndex, data, onSudokuCellInputHandler, sudokuConfigRef, isPlay }: SudokuCellProps) => {
-    // const cellInputRef = useRef<HTMLInputElement>(null)
-
+const SudokuCell = ({
+    data,
+    rowIndex,
+    colIndex,
+    isPlay,
+    activeInputMode,
+    focusCellCoords,
+    sudokuConfigRef,
+    setFocusCellCoords,
+    onSudokuCellInputHandler,
+}: SudokuCellProps) => {
     const [userHintInput, setUserHintInput] = useState("")
+    const [cellMode, setCellMode] = useState<CELL_MODE>(CELL_MODE.SOLUTION)
 
-    const [isDoubleClickStateActive, setIsDoubleClickStateActive] = useState(false)
+    const onDoubleClickHandler = () => {
+        if (!isPlay || AVAILABLE_INPUT_MODES[activeInputMode] === INPUT_MODE.NUMPAD || sudokuConfigRef.current.puzzle[get1DIndexFrom2DIndex(rowIndex, colIndex)] !== SUDOKU_DELIMITER) return
+
+        setCellMode(cellMode === CELL_MODE.SOLUTION ? CELL_MODE.HINT : CELL_MODE.SOLUTION)
+        setFocusCellCoords([rowIndex, colIndex])
+    }
+
+    const onHintInputFocusHandler = () => {
+        setFocusCellCoords([rowIndex, colIndex])
+    }
 
     const onHintInputBlurHandler = () => {
-        setIsDoubleClickStateActive(false)
+        setCellMode(CELL_MODE.SOLUTION)
+        setFocusCellCoords([-1, -1])
+    }
+
+    const onSolutionInputFocusHandler = () => {
+        setCellMode(CELL_MODE.SOLUTION)
+        setFocusCellCoords([rowIndex, colIndex])
+    }
+
+    const onSolutionInputBlurHandler = () => {
+        setFocusCellCoords([-1, -1])
     }
 
     const onHintInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,135 +75,56 @@ const SudokuCell = ({ rowIndex, colIndex, data, onSudokuCellInputHandler, sudoku
 
     return (
         <div
+            onDoubleClick={onDoubleClickHandler}
             className={clsx(
                 'relative flex justify-center items-center aspect-square',
-                { 'border border-red-500': isDoubleClickStateActive }
+                { 'bg-[#222]': cellMode === CELL_MODE.HINT }
             )}
         >
-            <CellElements rowIndex={rowIndex} colIndex={colIndex} />
+            {
+                cellMode === CELL_MODE.HINT &&
+                userHintInput.length === 0 &&
+                data === SUDOKU_DELIMITER &&
+                <Lightbulb className="absolute opacity-30 pointer-events-none" size={18} color='white' />
+            }
+            <CellElements
+                rowIndex={rowIndex}
+                colIndex={colIndex}
+                cellMode={cellMode}
+                focusCellCoords={focusCellCoords}
+            />
             <CellHints data={userHintInput.split('')} />
             {
                 sudokuConfigRef.current.puzzle[get1DIndexFrom2DIndex(rowIndex, colIndex)] === SUDOKU_DELIMITER
                     ? isPlay
-                        ? false
-                            ? <input
-                                value={''}
-                                // ref={cellInputRef}
-                                inputMode='numeric'
-                                onBlur={onHintInputBlurHandler}
-                                onKeyDown={onHintInputKeyDownHandler}
-                                onChange={onHintInputChangeHandler}
-                                style={{ paddingLeft: 'calc(50%)', paddingRight: 'calc(50%)' }}
-                                className='w-full h-full ibm-plex-mono-regular'
-                            />
-                            : <input
-                                inputMode='numeric'
-                                style={{ paddingLeft: 'calc(50% - 0.5ch)' }}
-                                value={data === SUDOKU_DELIMITER ? '' : data}
-                                className='w-full h-full ibm-plex-mono-regular outline-none'
-                                onChange={(e) => onSudokuCellInputHandler(e.target.value, rowIndex, colIndex)}
-                            />
-                        : <div className='ibm-plex-mono-regular'>{data === SUDOKU_DELIMITER ? '' : data}</div>
-                    : <div className='ibm-plex-mono-regular'>{data}</div>
+                        ? AVAILABLE_INPUT_MODES[activeInputMode] === INPUT_MODE.PENCIL
+                            ? cellMode === CELL_MODE.HINT
+                                ? <input
+                                    value=''
+                                    inputMode='numeric'
+                                    onFocus={onHintInputFocusHandler}
+                                    onBlur={onHintInputBlurHandler}
+                                    onKeyDown={onHintInputKeyDownHandler}
+                                    onChange={onHintInputChangeHandler}
+                                    placeholder={data === SUDOKU_DELIMITER ? '' : data}
+                                    style={{ caretColor: 'transparent', paddingLeft: 'calc(50% - 0.5ch)' }}
+                                    className='w-full h-full ibm-plex-mono-regular bg-transparent outline-none'
+                                />
+                                : <input
+                                    inputMode='numeric'
+                                    onFocus={onSolutionInputFocusHandler}
+                                    onBlur={onSolutionInputBlurHandler}
+                                    style={{ paddingLeft: 'calc(50% - 0.5ch)' }}
+                                    value={data === SUDOKU_DELIMITER ? '' : data}
+                                    className='w-full h-full ibm-plex-mono-regular outline-none'
+                                    onChange={(e) => onSudokuCellInputHandler(e.target.value, rowIndex, colIndex)}
+                                />
+                            : <div onClick={onSolutionInputFocusHandler} className='w-full h-full flex justify-center items-center ibm-plex-mono-regular'>{data === SUDOKU_DELIMITER ? '' : data}</div>
+                        : <div className='w-full h-full flex justify-center items-center ibm-plex-mono-regular'>{data === SUDOKU_DELIMITER ? '' : data}</div>
+                    : <div className='w-full h-full flex justify-center items-center ibm-plex-mono-regular'>{data}</div>
             }
         </div>
     )
-}
-
-const CellHints = ({ data }: { data: string[] }) => {
-    const getClassName = (i: number): string => {
-        switch (i) {
-            case 1: return 'pos-top-left'
-            case 2: return 'pos-top-middle'
-            case 3: return 'pos-top-right'
-            case 4: return 'pos-right-middle'
-            case 5: return 'pos-bottom-right'
-            case 6: return 'pos-bottom-middle'
-            case 7: return 'pos-bottom-left'
-            case 8: return 'pos-left-middle'
-            default: return ''
-        }
-    }
-
-    return <>
-        {
-            data.map((hint, i) => {
-                return <span key={i} className={clsx('text-xs', getClassName(i + 1))}>
-                    {hint}
-                </span>
-            })
-        }
-    </>
-}
-
-const CellElements = ({ rowIndex, colIndex }: { rowIndex: number, colIndex: number }) => {
-    const iconColor = SUDOKU_GRID.BORDER_COLOR
-    const plusIconSize = SUDOKU_GRID.PLUS_ICON_BORDER_SIZE
-    const plusIconStrokeWidth = SUDOKU_GRID.PLUS_ICON_STROKE_WIDTH
-    const minusIconSize = SUDOKU_GRID.MINUS_ICON_BORDER_SIZE
-    const minusIconStrokeWidth = SUDOKU_GRID.MINUS_ICON_STROKE_WIDTH
-    const commonClass = 'flex justify-center items-center absolute'
-
-    return <>
-        {/* + icon in all the 4 corners */}
-        {(colIndex % 3 === 0 || rowIndex % 3 === 0) && <span className={`${commonClass} pos-top-left`}>
-            <Plus
-                color={iconColor}
-                size={plusIconSize}
-                strokeWidth={plusIconStrokeWidth}
-            />
-        </span>}
-        {colIndex + 1 === 9 && <span className={`${commonClass} pos-top-right`}>
-            <Plus
-                color={iconColor}
-                size={plusIconSize}
-                strokeWidth={plusIconStrokeWidth}
-            />
-        </span>}
-        {rowIndex + 1 === 9 && colIndex + 1 === 9 && <span className={`${commonClass} pos-bottom-right`}>
-            <Plus
-                color={iconColor}
-                size={plusIconSize}
-                strokeWidth={plusIconStrokeWidth}
-            />
-        </span>}
-        {rowIndex + 1 === 9 && <span className={`${commonClass} pos-bottom-left`}>
-            <Plus
-                color={iconColor}
-                size={plusIconSize}
-                strokeWidth={plusIconStrokeWidth}
-            />
-        </span>}
-        {/* - icon on all the 4 edges */}
-        {rowIndex % 3 === 0 && <span className={`${commonClass} pos-top-middle`}>
-            <Minus
-                color={iconColor}
-                size={minusIconSize}
-                strokeWidth={minusIconStrokeWidth}
-            />
-        </span>}
-        {colIndex + 1 === 9 && <span className={`${commonClass} pos-right-middle-rotated`}>
-            <Minus
-                color={iconColor}
-                size={minusIconSize}
-                strokeWidth={minusIconStrokeWidth}
-            />
-        </span>}
-        {rowIndex + 1 === 9 && <span className={`${commonClass} pos-bottom-middle`}>
-            <Minus
-                color={iconColor}
-                size={minusIconSize}
-                strokeWidth={minusIconStrokeWidth}
-            />
-        </span>}
-        {colIndex % 3 === 0 && <span className={`${commonClass} pos-left-middle-rotated`}>
-            <Minus
-                color={iconColor}
-                size={minusIconSize}
-                strokeWidth={minusIconStrokeWidth}
-            />
-        </span>}
-    </>
 }
 
 export default SudokuCell

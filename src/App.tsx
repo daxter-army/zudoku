@@ -14,7 +14,7 @@ function App() {
   const allTimerRefs = useRef<Map<ID_TYPE, number>>(new Map())
 
   const [timer, setTimer] = useState(0)
-  const [isPlay, setIsPlay] = useState(false)
+  const [isPlay, setIsPlay] = useState(true)
   const [gameMode, setGameMode] = useState<GAME_MODE | null>(null)
   const [ledMatrix, setLedMatrix] = useState(LED_MATRIX_CONFIG)
 
@@ -103,7 +103,7 @@ function App() {
   }, [gameMode])
 
   return (
-    <div className='h-dvh flex items-center justify-center'>
+    <div className='appContainer h-dvh'>
       <div className='arenaContainer flex flex-col gap-4'>
         <div className='flex flex-col gap-3'>
           <div>
