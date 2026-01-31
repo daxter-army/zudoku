@@ -1,6 +1,6 @@
 :root {
     /* this is equivalent to ARENA_WIDTH */
-    --areana-width: 26.5rem;
+    --arena-width: 26.5rem;
 }
 
 .appContainer {
@@ -10,13 +10,28 @@
 }
 
 .arenaContainer {
-    width: 26.5rem;
+    width: var(--arena-width);
     transition: 0.2s;
+}
+
+.gameInfoModalContainer {
+    width: var(--arena-width);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 26.5rem) {
     .appContainer {
         display: block;
+    }
+
+    .gameInfoModalContainer {
+        padding: 0.8rem;
+        translate: unset;
+        top: unset;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        right: 0;
     }
 
     .arenaContainer {

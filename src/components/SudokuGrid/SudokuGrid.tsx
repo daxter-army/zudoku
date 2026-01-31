@@ -1,22 +1,34 @@
 import clsx from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Keyboard, Pause, Pencil, Play, RotateCcw, X } from 'lucide-react'
+import { Info, Keyboard, Pause, Pencil, Play, RotateCcw, X } from 'lucide-react'
 
 import { getSudoku } from 'sudoku-gen'
 import type { Sudoku } from 'sudoku-gen/dist/types/sudoku.type'
 
 import SudokuCell from '@/components/SudokuCell/SudokuCell'
+import GameInfoModal from '@/components/Modal/GameInfo/GameInfoModal'
 import TerminalButton from '@/components/TerminalButton/TerminalButton'
 
 import { get1DIndexFrom2DIndex, getDisplayTime, getFormattedCellInput } from '@/utils/utils'
 
-import { AVAILABLE_INPUT_MODES, INPUT_MODE, NUMPAD_KEYS } from '@/constants/common'
+import { AVAILABLE_INPUT_MODES, INPUT_MODE, MODAL_TYPE, NUMPAD_KEYS } from '@/constants/common'
 
 import type { SudokuGridProps } from "./SudokuGrid.props"
 
-const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay }: SudokuGridProps) => {
+const SudokuGrid = ({
+    timer,
+    gameMode,
+    setGameMode,
+    setTimer,
+    isPlay,
+    setIsPlay,
+    isSolved,
+    setIsSolved
+}: SudokuGridProps) => {
     const timerRef = useRef<number>(0)
     const sudokuConfigRef = useRef<Sudoku>(getSudoku(gameMode))
+
+    const [modal, setModal] = useState<MODAL_TYPE | null>(null)
 
     const [activeInputMode, setActiveInputMode] = useState(0)
     const [focusCellCoords, setFocusCellCoords] = useState<number[]>([-1, -1])
@@ -40,20 +52,24 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
     const onGameStopHandler = () => {
         setGameMode(null)
 
+        setIsSolved(false)
         onPauseClickHandler()
     }
 
-    // const onInfoClickHandler = () => { }
+    const onInfoClickHandler = () => {
+        setModal(!modal ? MODAL_TYPE.INFO : null)
+    }
 
     const onGameResetHandler = () => {
         setUserSudokuPuzzle(sudokuConfigRef.current.puzzle)
         setTimer(0)
 
+        setIsSolved(false)
         onPauseClickHandler()
     }
 
     const onPlayClickHandler = () => {
-        if (isPlay) return
+        if (isPlay || isSolved) return
 
         timerRef.current = setInterval(() => {
             setTimer(prev => prev + 1)
@@ -92,6 +108,14 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
         onSudokuCellInputHandler(num, focusRowIndex, focusColIndex)
     }
 
+    // this checks whether the sudoku is solved or not
+    useEffect(() => {
+        if (userSudokuPuzzle !== sudokuConfigRef.current.solution) return
+
+        setIsSolved(true)
+        onPauseClickHandler()
+    }, [userSudokuPuzzle])
+
     // for handling timer
     useEffect(() => {
         timerRef.current = setInterval(() => {
@@ -129,9 +153,9 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                     <p className='text-sm ibm-plex-mono-regular'>{getDisplayTime(timer)} • {gameMode}</p>
                 </div>
                 <div className='flex'>
-                    {/* <TerminalButton customContainerClassNames='mb-1' onClickHandler={onInfoClickHandler} customButtonClassNames='!pt-2 !py-2 !px-2'>
+                    <TerminalButton customContainerClassNames='mb-1' onClickHandler={onInfoClickHandler} customButtonClassNames='!pt-2 !py-2 !px-2'>
                         <Info size={16} color='white' />
-                    </TerminalButton> */}
+                    </TerminalButton>
                     <TerminalButton
                         title='pencil/stylus mode'
                         customContainerClassNames='mb-1'
@@ -148,6 +172,7 @@ const SudokuGrid = ({ gameMode, timer, setGameMode, setTimer, isPlay, setIsPlay 
                     </TerminalButton>
                 </div>
             </div>
+            {modal && <GameInfoModal onBackdropClickHandler={onInfoClickHandler} />}
             {AVAILABLE_INPUT_MODES[activeInputMode] === INPUT_MODE.NUMPAD && <div className='flex'>
                 {NUMPAD_KEYS.map((num, i) => <TerminalButton
                     key={i}

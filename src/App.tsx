@@ -1,3 +1,4 @@
+import confetti from 'canvas-confetti'
 import { useEffect, useRef, useState } from 'react'
 
 import BillBoard from '@/components/BillBoard/BillBoard'
@@ -5,8 +6,8 @@ import SudokuGrid from '@/components/SudokuGrid/SudokuGrid'
 import TerminalButton from '@/components/TerminalButton/TerminalButton'
 
 import { GAME_MODE, ID_TYPE } from '@/constants/common'
-import { fullLed, LED_MATRIX_CONFIG, offLed } from '@/constants/led'
-import { GAME_IN_PROGRESS, SELECT_MODE, WELCOME_TEXT } from '@/constants/lang'
+import { GAME_IN_PROGRESS, SELECT_MODE, WELCOME_TEXT, WINNER_TEXT } from '@/constants/lang'
+import { fullLed, LED_MATRIX_CONFIG_SUDOKU, LED_MATRIX_CONFIG_SOLVED, offLed } from '@/constants/led'
 
 import './App.css'
 
@@ -15,8 +16,10 @@ function App() {
 
   const [timer, setTimer] = useState(0)
   const [isPlay, setIsPlay] = useState(true)
+
+  const [isSolved, setIsSolved] = useState(false)
+  const [ledMatrix, setLedMatrix] = useState(LED_MATRIX_CONFIG_SUDOKU)
   const [gameMode, setGameMode] = useState<GAME_MODE | null>(null)
-  const [ledMatrix, setLedMatrix] = useState(LED_MATRIX_CONFIG)
 
   const onEasyModeClickHandler = () => {
     setGameMode(GAME_MODE.EASY)
@@ -32,6 +35,46 @@ function App() {
     setGameMode(GAME_MODE.HARD)
     setIsPlay(true)
   }
+
+  const onVictoryHandler = () => {
+    const end = Date.now() + 3 * 1000 // 3 seconds
+    const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"]
+
+    const frame = () => {
+      if (Date.now() > end) return
+
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 0, y: 0.5 },
+        colors: colors,
+      })
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 1, y: 0.5 },
+        colors: colors,
+      })
+
+      requestAnimationFrame(frame)
+    }
+
+    frame()
+  }
+
+  // plays confetti when the sudoku is completed
+  useEffect(() => {
+    if (!isSolved) {
+      setLedMatrix(LED_MATRIX_CONFIG_SUDOKU)
+      return
+    }
+    onVictoryHandler()
+    setLedMatrix(LED_MATRIX_CONFIG_SOLVED)
+  }, [isSolved])
 
   // S <-> Z animation switching off
   useEffect(() => {
@@ -108,7 +151,15 @@ function App() {
         <div className='flex flex-col gap-3'>
           <div>
             <BillBoard data={ledMatrix} />
-            <p className='mt-4 text-l ibm-plex-mono-medium'>{gameMode ? isPlay ? GAME_IN_PROGRESS : 'paused' : WELCOME_TEXT}</p>
+            <p className='mt-4 text-l ibm-plex-mono-medium'>{
+              isSolved
+                ? WINNER_TEXT
+                : gameMode
+                  ? isPlay
+                    ? GAME_IN_PROGRESS
+                    : 'paused'
+                  : WELCOME_TEXT
+            }</p>
           </div>
           {!gameMode && <div className='flex flex-col gap-2'>
             <p className='text-sm ibm-plex-mono-regular'>{SELECT_MODE}</p>
@@ -139,6 +190,8 @@ function App() {
             setGameMode={setGameMode}
             setTimer={setTimer}
             setIsPlay={setIsPlay}
+            isSolved={isSolved}
+            setIsSolved={setIsSolved}
           />}
         </div>
       </div>

@@ -23,6 +23,11 @@ export const CELL_MODE = {
 } as const
 export type CELL_MODE = (typeof CELL_MODE)[keyof typeof CELL_MODE];
 
+export const MODAL_TYPE = {
+    INFO: 'INFO',
+}
+export type MODAL_TYPE = (typeof MODAL_TYPE)[keyof typeof MODAL_TYPE];
+
 export const AVAILABLE_INPUT_MODES = [
     INPUT_MODE.PENCIL, // apple pencil input
     INPUT_MODE.NUMPAD, // on screen numpad (e.g mobile)

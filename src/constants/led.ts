@@ -60,6 +60,7 @@ export const offLed = {
     height: LED_SIZE_HEIGHT,
 }
 
+// SUDOKU config
 const LED_MATRIX_CONFIG_SU_CONFIG: ledMatixItemConfig[][] = [
     [fullLed, fullLed, fullLed, fullLed, separatorLed, fullLed, offLed, offLed, fullLed],
     [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
@@ -84,7 +85,7 @@ const LED_MATRIX_CONFIG_KU_CONFIG: ledMatixItemConfig[][] = [
     [fullLed, offLed, offLed, fullLed, separatorLed, rightPartialLed, fullLed, fullLed, leftPartialLed],
 ]
 
-export const LED_MATRIX_CONFIG: ledMatixItemConfig[][] = [
+export const LED_MATRIX_CONFIG_SUDOKU: ledMatixItemConfig[][] = [
     [
         ...LED_MATRIX_CONFIG_SU_CONFIG[0],
         separatorLed,
@@ -122,5 +123,68 @@ export const LED_MATRIX_CONFIG: ledMatixItemConfig[][] = [
     ],
 ]
 
+// SOLVED config
+const LED_MATRIX_CONFIG_SO_CONFIG: ledMatixItemConfig[][] = [
+    [fullLed, fullLed, fullLed, fullLed, separatorLed, rightPartialLed, fullLed, fullLed, leftPartialLed],
+    [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, fullLed, fullLed, fullLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [offLed, offLed, offLed, fullLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, fullLed, fullLed, fullLed, separatorLed, rightPartialLed, fullLed, fullLed, leftPartialLed],
+]
+
+const LED_MATRIX_CONFIG_LV_CONFIG: ledMatixItemConfig[][] = [
+    [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, offLed, offLed, offLed, separatorLed, rightPartialLed, leftPartialLed, rightPartialLed, leftPartialLed],
+    [fullLed, fullLed, fullLed, fullLed, separatorLed, offLed, fullLed, fullLed, offLed],
+]
+
+const LED_MATRIX_CONFIG_ED_CONFIG: ledMatixItemConfig[][] = [
+    [fullLed, fullLed, fullLed, fullLed, separatorLed, fullLed, fullLed, fullLed, leftPartialLed],
+    [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, fullLed, fullLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, offLed, offLed, offLed, separatorLed, fullLed, offLed, offLed, fullLed],
+    [fullLed, fullLed, fullLed, fullLed, separatorLed, fullLed, fullLed, fullLed, leftPartialLed],
+]
+
+export const LED_MATRIX_CONFIG_SOLVED: ledMatixItemConfig[][] = [
+    [
+        ...LED_MATRIX_CONFIG_SO_CONFIG[0],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_LV_CONFIG[0],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_ED_CONFIG[0],
+    ],
+    [
+        ...LED_MATRIX_CONFIG_SO_CONFIG[1],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_LV_CONFIG[1],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_ED_CONFIG[1],
+    ],
+    [
+        ...LED_MATRIX_CONFIG_SO_CONFIG[2],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_LV_CONFIG[2],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_ED_CONFIG[2],
+    ],
+    [
+        ...LED_MATRIX_CONFIG_SO_CONFIG[3],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_LV_CONFIG[3],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_ED_CONFIG[3],
+    ],
+    [
+        ...LED_MATRIX_CONFIG_SO_CONFIG[4],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_LV_CONFIG[4],
+        separatorLed,
+        ...LED_MATRIX_CONFIG_ED_CONFIG[4],
+    ],
+]
+
 // this is in rem
-export const ARENA_WIDTH = LED_SHADOW_LENGTH + (LED_SIZE_WIDTH * LED_MATRIX_CONFIG[0].length)
+export const ARENA_WIDTH = LED_SHADOW_LENGTH + (LED_SIZE_WIDTH * LED_MATRIX_CONFIG_SUDOKU[0].length)
