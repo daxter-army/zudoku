@@ -1,4 +1,4 @@
 export type GameInfoModalProps = {
-    onCloseClickHandler: () => void
+    onCloseClickHandler?: () => void
     onBackdropClickHandler: () => void
 }
